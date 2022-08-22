@@ -23,6 +23,7 @@ func InitRoutes() {
 	publicRoutes.GET("health", HealthCheck)
 	publicRoutes.GET("champion", GetChampion)
 	publicRoutes.POST("champion", AddChampion)
+	publicRoutes.PUT("champion", UpdateChampion)
 }
 
 func HealthCheck(context *gin.Context) {
@@ -63,5 +64,27 @@ func AddChampion(context *gin.Context) {
 	champions[championReq.Name] = championReq.Quote
 	context.JSON(http.StatusCreated, gin.H{
 		"message": "Champion added",
+	})
+}
+
+func UpdateChampion(context *gin.Context) {
+	context.BindJSON(&championReq)
+	if len(championReq.Name) == 0 || len(championReq.Quote) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{
+			championReq.Name: championReq.Quote,
+		})
+		return
+	}
+	_, ok := champions[championReq.Name]
+	if !ok {
+		context.JSON(http.StatusNotFound, gin.H{
+			championReq.Name: "Champion not exsits",
+		})
+		return
+	}
+
+	champions[championReq.Name] = championReq.Quote
+	context.JSON(http.StatusCreated, gin.H{
+		"message": "Champion updated",
 	})
 }
