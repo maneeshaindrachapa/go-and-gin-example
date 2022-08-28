@@ -24,6 +24,7 @@ func InitRoutes() {
 	publicRoutes.GET("champion", GetChampion)
 	publicRoutes.POST("champion", AddChampion)
 	publicRoutes.PUT("champion", UpdateChampion)
+	publicRoutes.DELETE("champion", DeleteChampion)
 }
 
 func HealthCheck(context *gin.Context) {
@@ -86,5 +87,13 @@ func UpdateChampion(context *gin.Context) {
 	champions[championReq.Name] = championReq.Quote
 	context.JSON(http.StatusCreated, gin.H{
 		"message": "Champion updated",
+	})
+}
+
+func DeleteChampion(context *gin.Context) {
+	champion := context.Query("championName")
+	delete(champions, champion)
+	context.JSON(http.StatusOK, gin.H{
+		"message": "Champion deleted successfully",
 	})
 }
